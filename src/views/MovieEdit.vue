@@ -1,19 +1,23 @@
 <template>
     <v-row>
-        <p class="text-h5">Détails du film</p>
+        <p class="text-h5">Détail du film</p>
     </v-row>
     <v-row>
         <v-card class="mx-auto" min-width="1000">
             <v-row>
                 <v-col cols="12" lg="9" md="12" sm="12">
-                    <v-card-text class="font-weight-thin">
-                        {{ movie.description }}
-                    </v-card-text>
+                    <v-textarea label="Description" variant="outlined" v-model="movie.description">
+                    </v-textarea>
                 </v-col>
                 <v-col cols="12" lg="3" md="12" sm="12">
                     <v-card-text class="text-end">
                         <p class="font-weight-bold">Acteurs :</p>
                         <p v-for="actor in movie.actors" :key="actor.id">{{ actor }}</p>
+                        <v-row align="center">
+                            <v-text-field label="Prénom"></v-text-field>
+                            <v-text-field label="Nom"></v-text-field>
+                            <v-btn variant="tonal" color="medium-emphasis" icon="mdi-plus" size="small"></v-btn>
+                        </v-row>
                     </v-card-text>
                 </v-col>
             </v-row>
@@ -21,21 +25,9 @@
                 <v-icon v-if="movie.average_grade != null" icon="mdi-star"></v-icon>
                 <p v-if="movie.average_grade != null" class="font-weight-thin"><span class="font-weight-bold">Note moyenne : </span>{{ avarageGrade }}</p>
                 <v-spacer></v-spacer>
-                <v-btn @click="redirectToEdit" color="medium-emphasis" icon="mdi-pencil" size="small"></v-btn>
+                <v-btn @click="sendEdit" variant="tonal" color="medium-emphasis" icon="mdi-check" size="small"></v-btn>
             </v-card-actions>
         </v-card>
-    </v-row>
-    <v-row align="center">
-        <v-col cols="10">
-            <v-text-field class="grade-input" v-model="gradeValue" label="Note" placeholder="Entrez votre texte"
-                type="number" min="1" max="5">
-            </v-text-field>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="handleButtonClick">
-                Envoyer
-            </v-btn>
-        </v-col>
     </v-row>
 </template>
 
@@ -49,7 +41,6 @@ const route = useRoute();
 const router = useRouter();
 const id = ref(route.params.id);
 const movie = ref([]);
-const gradeValue = ref(null);
 
 const avarageGrade = computed(() => {
   return Math.floor(movie.value.average_grade * 100) / 100;
@@ -69,32 +60,17 @@ const fetchData = async () => {
     }
 };
 
-const handleButtonClick = () => {
-    //alert(`The number entered is: ${gradeValue.value}`); // Log
-    if(gradeValue.value !== null) {
-        sendReview();
-        gradeValue.value = null;
-    }
-};
 
-const sendReview = async () => {
+const sendEdit = async () => {
     try {
-        const response = await axios.post(`http://127.0.0.1:8000/api/reviews/`, {
-            movie: movie.value.id,
-            grade: gradeValue.value
+        const response = await axios.put(`http://127.0.0.1:8000/api/movies/${id.value}/`, {
+            title: movie.value.title,
+            description: movie.value.description
         });
-        //console.log('Response from server:', response.data); //log
-        if (response.status === 201) {
-            // Mettre à jour la note moyenne dans movie.value
-            movie.value.average_grade = response.data.movie.average_grade
-        }
+        //console.log('Response from server:', response.data); // Log
     } catch (error) {
         console.error('Error fetching data:', error);
     }
-};
-
-const redirectToEdit = () => {
-    router.push(`/movie/${id.value}/edit`);
 };
 </script>
 
