@@ -2,7 +2,7 @@
     <v-card>
         <v-card-item>
             <v-card-title primary-title>{{ title }}</v-card-title>
-            <v-card-subtitle>{{ description }}</v-card-subtitle>
+            <v-card-subtitle class="font-weight-thin">{{ description }}</v-card-subtitle>
         </v-card-item>
         <v-card-actions>
             <v-spacer></v-spacer>
