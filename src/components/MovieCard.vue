@@ -16,8 +16,10 @@
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
+// Props
 const props = defineProps(['id', 'title', 'description']);
 
+// Router | Redirection vers le bon film
 const redirectToMovie = () => {
   router.push('/movie/'+props.id);
 };
