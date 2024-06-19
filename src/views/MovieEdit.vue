@@ -36,20 +36,24 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 
-// On récupère l'ID du film depuis les paramètres d'URL
+// Imports de useRoute() et useRouter(), usages dissociés
 const route = useRoute();
 const router = useRouter();
+// On récupère l'ID du film depuis les paramètres d'URL
 const id = ref(route.params.id);
+// Movie récupéré par fetchData
 const movie = ref([]);
 
 const avarageGrade = computed(() => {
   return Math.floor(movie.value.average_grade * 100) / 100;
 })
 
+// On injecte les datas récupérés par fetchData
 onMounted(async () => {
     movie.value = await fetchData();
 });
 
+// Requête axios | GET sur l'API pour récupérer les données du film
 const fetchData = async () => {
     try {
         const response = await axios.get(`http://127.0.0.1:8000/api/movies/${id.value}?format=json`);
@@ -60,7 +64,7 @@ const fetchData = async () => {
     }
 };
 
-
+// Requête axios | Envoie des modifications
 const sendEdit = async () => {
     try {
         const response = await axios.put(`http://127.0.0.1:8000/api/movies/${id.value}/`, {

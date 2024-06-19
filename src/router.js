@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+// Router | Definition des routes
 const routes = [
     {
         path: '',
