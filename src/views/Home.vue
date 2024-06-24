@@ -12,6 +12,11 @@
                     />
                 </v-col>
             </v-row>
+            <v-row>
+                <button @click="fetchData(currentPage - 1)" v-if="currentPage != 1">Précédent</button>
+                <v-spacer></v-spacer>
+                <button @click="fetchData(currentPage + 1)" :disabled="!nextPage">Suivant</button>
+            </v-row>
         </v-container>
     </v-card>
 </template>
@@ -21,20 +26,24 @@ import { ref, onMounted } from 'vue'
 import MovieCard from '../components/MovieCard.vue'
 import axios from 'axios';
 
-const fetchData = async () => {
+const movies = ref([]);
+const currentPage = ref(1);
+const nextPage = ref(null);
+const previousPage = ref(null);
+
+const fetchData = async (page) => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/movies?format=json');
-        return response.data;
+        const response = await axios.get(`http://127.0.0.1:8000/api/movies?format=json&page=${page}`);
+        movies.value = response.data.results;
+        currentPage.value = page;
+        nextPage.value = response.data.next !== null;
+        previousPage.value = response.data.previous !== null;
     } catch (error) {
         console.error('Error fetching data:', error);
-        return [];
     }
 };
 
-//const { ref, onMounted } = Vue;
-const movies = ref([]);
-
 onMounted(async () => {
-    movies.value = await fetchData();
+    fetchData(currentPage.value);
 });
 </script>
