@@ -94,6 +94,7 @@ class ApiService {
     async postReview(data) {
         try {
             const response = await this.api.post(this._getFullURL(`/reviews/?format=json`), data);
+            console.log("DATA :" + response.data.results)
             return response.data;
         } catch (error) {
             console.error("Erreur lors de l'ajout de la review", error);

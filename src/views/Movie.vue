@@ -5,34 +5,25 @@
   <v-row>
     <MovieDetailCard :movie="movie" />
   </v-row>
-  <MovieReviewForm :movie-id="movie.id" @onReviewSubmitted="updateAverageGrade" />
+  <MovieReviewForm :movie-id="movie.id" />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import ApiService from '../apiService';
 
 import MovieDetailCard from '../components/MovieDetailCard.vue';
 import MovieReviewForm from '../components/MovieReviewForm.vue';
 
+const store = useStore();
 const route = useRoute();
-const movie = ref({});
 
-const fetchData = async () => {
-  try {
-    const response = await ApiService.getMovie(route.params.id);
-    movie.value = response;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
+const movie = computed(() => store.state.movie);
 
-onMounted(fetchData);
-
-const updateAverageGrade = (newAverageGrade) => {
-  movie.value.average_grade = newAverageGrade;
-};
+onMounted(() => {
+  store.dispatch('fetchMovie', route.params.id);
+});
 </script>
 
 <style scoped>
