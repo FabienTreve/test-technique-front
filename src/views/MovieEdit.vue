@@ -34,7 +34,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+import ApiService from '../apiService';
 
 // Imports de useRoute() et useRouter(), usages dissociés
 const route = useRoute();
@@ -56,8 +56,8 @@ onMounted(async () => {
 // Requête axios | GET sur l'API pour récupérer les données du film
 const fetchData = async () => {
     try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/movies/${id.value}?format=json`);
-        return response.data;
+        const response = await ApiService.getMovie(route.params.id);
+        return response;
     } catch (error) {
         console.error('Error fetching data:', error);
         return [];
@@ -67,10 +67,11 @@ const fetchData = async () => {
 // Requête axios | Envoie des modifications
 const sendEdit = async () => {
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/movies/${id.value}/`, {
+        const response = await ApiService.updateMovie(id.value, {
             title: movie.value.title,
             description: movie.value.description
         });
+        router.push(`/movie/${movie.value.id}`);
         //console.log('Response from server:', response.data); // Log
     } catch (error) {
         console.error('Error fetching data:', error);
