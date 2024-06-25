@@ -24,7 +24,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import MovieCard from '../components/MovieCard.vue'
-import axios from 'axios';
+import ApiService from '../apiService';
 
 const movies = ref([]);
 const currentPage = ref(1);
@@ -33,11 +33,11 @@ const previousPage = ref(null);
 
 const fetchData = async (page) => {
     try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/movies?format=json&page=${page}`);
-        movies.value = response.data.results;
+        const response = await ApiService.getMovies(page);
+        movies.value = response.results;
         currentPage.value = page;
-        nextPage.value = response.data.next !== null;
-        previousPage.value = response.data.previous !== null;
+        nextPage.value = response.next !== null;
+        previousPage.value = response.previous !== null;
     } catch (error) {
         console.error('Error fetching data:', error);
     }
