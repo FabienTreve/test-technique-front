@@ -9,7 +9,7 @@
             <v-col cols="12" lg="3" md="12" sm="12">
                 <v-card-text class="text-end">
                     <p class="font-weight-bold">Acteurs :</p>
-                    <p v-for="actor in movie.actors" :key="actor.id">{{ actor }}</p>
+                    <p v-for="actor in movie.actors_display" :key="actor.id">{{ actor }}</p>
                 </v-card-text>
             </v-col>
         </v-row>

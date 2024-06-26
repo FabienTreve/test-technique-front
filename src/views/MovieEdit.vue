@@ -12,18 +12,18 @@
                 <v-col cols="12" lg="3" md="12" sm="12">
                     <v-card-text class="text-end">
                         <p class="font-weight-bold">Acteurs :</p>
-                        <p v-for="actor in movie.actors" :key="actor.id">{{ actor }}</p>
+                        <p v-for="actor in movie.actors_display" :key="actor.id">{{ actor }}</p>
                         <v-row align="center">
-                            <v-text-field label="Prénom"></v-text-field>
-                            <v-text-field label="Nom"></v-text-field>
-                            <v-btn variant="tonal" color="medium-emphasis" icon="mdi-plus" size="small"></v-btn>
+                            <v-text-field v-model="firstName" label="Prénom"></v-text-field>
+                            <v-text-field v-model="lastName" label="Nom"></v-text-field>
                         </v-row>
                     </v-card-text>
                 </v-col>
             </v-row>
             <v-card-actions>
                 <v-icon v-if="movie.average_grade != null" icon="mdi-star"></v-icon>
-                <p v-if="movie.average_grade != null" class="font-weight-thin"><span class="font-weight-bold">Note moyenne : </span>{{ avarageGrade }}</p>
+                <p v-if="movie.average_grade != null" class="font-weight-thin"><span class="font-weight-bold">Note
+                        moyenne : </span>{{ averageGrade }}</p>
                 <v-spacer></v-spacer>
                 <v-btn @click="sendEdit" variant="tonal" color="medium-emphasis" icon="mdi-check" size="small"></v-btn>
             </v-card-actions>
@@ -36,24 +36,22 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ApiService from '../apiService';
 
-// Imports de useRoute() et useRouter(), usages dissociés
 const route = useRoute();
 const router = useRouter();
-// On récupère l'ID du film depuis les paramètres d'URL
 const id = ref(route.params.id);
-// Movie récupéré par fetchData
 const movie = ref([]);
+const averageGrade = computed(() => {
+    return Math.floor(movie.value.average_grade * 100) / 100;
+});
 
-const avarageGrade = computed(() => {
-  return Math.floor(movie.value.average_grade * 100) / 100;
-})
+// Déclarer les refs pour Prénom et Nom
+const firstName = ref('');
+const lastName = ref('');
 
-// On injecte les datas récupérés par fetchData
 onMounted(async () => {
     movie.value = await fetchData();
 });
 
-// Requête axios | GET sur l'API pour récupérer les données du film
 const fetchData = async () => {
     try {
         const response = await ApiService.getMovie(route.params.id);
@@ -64,22 +62,28 @@ const fetchData = async () => {
     }
 };
 
-// Requête axios | Envoie des modifications
 const sendEdit = async () => {
     try {
+        const actors_data = [];
+        if (firstName.value && lastName.value) {
+            actors_data.push({
+                "first_name": firstName.value,
+                "last_name": lastName.value
+            });
+        }
         const response = await ApiService.updateMovie(id.value, {
             title: movie.value.title,
-            description: movie.value.description
+            description: movie.value.description,
+            actors: actors_data
         });
         router.push(`/movie/${movie.value.id}`);
-        //console.log('Response from server:', response.data); // Log
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error updating movie:', error);
     }
 };
 </script>
 
-<style computed>
+<style scoped>
 .text-h5 {
     color: rgba(0, 0, 0, 0.87);
 }
