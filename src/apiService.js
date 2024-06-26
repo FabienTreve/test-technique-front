@@ -94,10 +94,20 @@ class ApiService {
     async postReview(data) {
         try {
             const response = await this.api.post(this._getFullURL(`/reviews/?format=json`), data);
-            console.log("DATA :" + response.data.results)
             return response.data;
         } catch (error) {
             console.error("Erreur lors de l'ajout de la review", error);
+            throw error;
+        }
+    }
+
+    // Méthode pour ajouter un acteur
+    async postActor(data) {
+        try {
+            const response = await this.api.post(this._getFullURL(`/actors/?format=json`), data);
+            return response.data;
+        } catch (error) {
+            console.error("Erreur lors de l'ajout de l'acteur'", error);
             throw error;
         }
     }
